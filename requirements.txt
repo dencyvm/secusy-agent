@@ -1,0 +1,8 @@
+channels==3.0.3
+channels-redis==3.3.0
+requests==2.26.0
+Django==3.2.11
+daphne==3.0.2
+django-environ
+websockets
+PyJWT

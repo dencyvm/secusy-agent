@@ -1,0 +1,38 @@
+version: "3.9"
+
+networks:
+  default:
+    external: false
+    name: WebSocket_Network
+
+services:
+  redis:
+    image: "redis:alpine"
+
+  web:
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8099"
+    # command: ["python", "manage.py", "runserver", "0.0.0.0:8099"]
+    volumes:
+      - .:/code
+    ports:
+      - "8099:8099"
+    depends_on:
+      - redis
+    container_name: scanner_WebSocket_web
+    networks:
+      - default
+
+  worker:
+    build: .
+    command: ["python", "manage.py", "runworker", "scannerWebSocket.routing.application"]
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+    container_name: scanner_WebSocket_worker
+    networks:
+      - default
+
+volumes:
+  redis_data:
