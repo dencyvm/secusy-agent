@@ -6,3 +6,4 @@ daphne==3.0.2
 django-environ
 websockets
 PyJWT
+cryptography
