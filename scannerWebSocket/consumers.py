@@ -7,22 +7,6 @@ from urllib.parse import urlparse
 from django.utils import timezone
 from django.conf import settings
 from scannerWebSocket.token_utils import create_token
-import base64
-from cryptography.fernet import Fernet
-
-
-def decrypt(string):
-    try:
-        # base64 decode
-        txt = base64.urlsafe_b64decode(string)
-        cipher_suite = Fernet(settings.ENCRYPT_KEY)
-        decoded_text = cipher_suite.decrypt(txt).decode("ascii")     
-        return decoded_text
-    except Exception as e:
-        # log the error
-        print(e)
-        return None
-
 
 
 
@@ -184,22 +168,16 @@ class DataConsumer(AsyncWebsocketConsumer):
                                 payload = {
                                     "urls": target,
                                     "org_ref_id": settings.ORG_ID,
-                                    "scan_type": "network_scan"
+                                    "scan_type": "network_scan",
+                                    "scan_input_meta": scan['scan_input_meta']
                                 }
                             if agent_type == "zap":
-                                scan_input_meta = json.loads(scan['scan_input_meta'])
-                                username = scan_input_meta.get("username")
-                                password = decrypt(scan_input_meta.get("password"))
-
-                                scanner_endpoint = url + '/api-scan'
-
                                 payload = {
                                     "target": scan['target'],
                                     "org_ref_id": settings.ORG_ID,
                                     "scan_type": "network_scan",
                                     "postman_file": scan['file_path'],
-                                    "username": username,
-                                    "password": password
+                                    "scan_input_meta": scan['scan_input_meta']
                                 }
                         
                         try:

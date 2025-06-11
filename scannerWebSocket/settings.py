@@ -129,5 +129,3 @@ ORG_ID = env('ORG_ID', default="46d9-8baf-182782fa15df")
 SECUSY_API = env('SECUSY_API', default="http://host.docker.internal:8001/api")
 JWT_SECRET_KEY = env('INTERNAL_JWT_SECRET_KEY')
 NETWORK_LOCATION = env('NETWORK_LOCATION',default='DEFAULT')
-
-ENCRYPT_KEY=b'wFGyKRyw_wSCa_FP57lC4GL_OW9tE7Hrt0uVTajQ29k='
