@@ -67,119 +67,93 @@ class DataConsumer(AsyncWebsocketConsumer):
 
                     if scan_action == 'start':
                         payload = {}
-                        if scan['scan_type'] == 'asset_scan':
-                            if agent_type == "nessus":
-                                if scan['nessus_policy'] != None:
-                                    policy_type = scan['nessus_policy']['policy_name']
-                                    policy_file = scan['nessus_policy']['policy_file']
-                                else:
-                                    policy_type = None
-                                    policy_file = None
-                                payload = {
-                                    "target": scan['asset_id']['asset_name'],
-                                    "policy_type": policy_type,
-                                    "policy_file": policy_file,
-                                    "org_ref_id": settings.ORG_ID
-                                }
-                            if agent_type == "burpsuit":
-                                asset_url_id = scan['url_id']
-                                asset_url = asset_url_id['url'] if asset_url_id is not None else scan['asset_id']['asset_name']
-                                payload = {
-                                    "urls": asset_url,
-                                    "org_ref_id": settings.ORG_ID
-                                }
-                            if agent_type == "masscan":
-                                if scan['schedule'] != None and scan['schedule']['scan_input_meta'] is not None:
-                                    agent_meta = json.loads(scan['schedule']['scan_input_meta'])
-                                else:
-                                    if scan['scan_input_meta'] is not None:
-                                        agent_meta = json.loads(scan['scan_input_meta'])
-                                    else:
-                                        agent_meta = json.loads(scan['agent_id']['agent_meta'])
-                                payload = {
-                                    "ip_string": scan['asset_id']['asset_name'],
-                                    "ports_string": agent_meta['ports_string'],  # Load it from meta
-                                    "scan_scope": scan['scan_scope'],
-                                    "org_ref_id": settings.ORG_ID
-                                }
-                            if agent_type == "attack_surface":
-                                if scan['schedule'] != None and scan['schedule']['scan_input_meta'] is not None:
-                                    agent_meta = json.loads(scan['schedule']['scan_input_meta'])
-                                else:
-                                    if scan['scan_input_meta'] is not None:
-                                        agent_meta = json.loads(scan['scan_input_meta'])
-                                    else:
-                                        agent_meta = json.loads(scan['agent_id']['agent_meta'])
-                                payload = {
-                                    "ip_string": scan['asset_id']['asset_name'],
-                                    "ports_string": agent_meta['ports_string'],  # Load it from meta
-                                    "scan_scope": scan['scan_scope'],
-                                    "org_ref_id": settings.ORG_ID
-                                }
-                            if agent_type == "wpscan":
-                                asset_url_id = scan['url_id']
-                                asset_url = asset_url_id['url'] if asset_url_id is not None else scan['asset_id']['asset_name']
-                                payload = {
-                                    "target": asset_url,
-                                    "org_ref_id": settings.ORG_ID
-                                }
-                            if agent_type == "dsscan":
-                                parsed_url = urlparse(scan['asset_id']['asset_name'])
-                                if parsed_url.netloc == '':
-                                    main_domain = parsed_url.path.split(".")[-2] + "." + parsed_url.path.split(".")[-1]
-                                else:
-                                    main_domain = parsed_url.netloc.split(".")[-2] + "." + parsed_url.netloc.split(".")[-1]
-                                payload = {
-                                    "domain": main_domain,
-                                    "org_ref_id": settings.ORG_ID
-                                }
-                            if agent_type == "ipreputation":
-                                pass
-                            if agent_type == "ssllabs":
-                                payload = {
-                                    "target": scan['asset_id']['asset_name'],
-                                    "org_ref_id": settings.ORG_ID
-                                }
-                            if agent_type == "zap":
-                                asset_url_id = scan['url_id']
-                                asset_url = asset_url_id['url'] if asset_url_id is not None else scan['asset_id']['asset_name']
-                                payload = {
-                                    "target": asset_url,
-                                    "org_ref_id": settings.ORG_ID
-                                }
-                        else:
-                            if agent_type == "nessus":
-                                if scan['nessus_policy'] != None:
-                                    policy_type = scan['nessus_policy']['policy_name']
-                                    policy_file = scan['nessus_policy']['policy_file']
-                                else:
-                                    policy_type = None
-                                    policy_file = None
+                        if agent_type == "nessus":
+                            if scan['nessus_policy'] != None:
+                                policy_type = scan['nessus_policy']['policy_name']
+                                policy_file = scan['nessus_policy']['policy_file']
+                            else:
+                                policy_type = None
+                                policy_file = None
 
-                                payload = {
-                                    "target": scan['target'],
-                                    "policy_type": policy_type,
-                                    "policy_file": policy_file,
-                                    "org_ref_id": settings.ORG_ID,
-                                    "scan_type": "network_scan"
-                                }
-                            if agent_type == "burpsuit":
-                                target = scan['target']
-                                payload = {
-                                    "urls": target,
-                                    "org_ref_id": settings.ORG_ID,
-                                    "scan_type": "network_scan",
-                                    "scan_input_meta": scan['scan_input_meta']
-                                }
-                            if agent_type == "zap":
-                                payload = {
-                                    "target": scan['target'],
-                                    "org_ref_id": settings.ORG_ID,
-                                    "scan_type": "network_scan",
-                                    "postman_file": scan['file_path'],
-                                    "scan_input_meta": scan['scan_input_meta']
-                                }
-                        
+                            payload = {
+                                "target": scan['target'],
+                                "policy_type": policy_type,
+                                "policy_file": policy_file,
+                                "org_ref_id": settings.ORG_ID,
+                                "scan_type": "network_scan"
+                            }
+                        if agent_type == "burpsuit":
+                            target = scan['target']
+                            payload = {
+                                "urls": target,
+                                "org_ref_id": settings.ORG_ID,
+                                "scan_type": "network_scan",
+                                "scan_input_meta": scan['scan_input_meta']
+                            }
+                        if agent_type == "zap":
+                            payload = {
+                                "target": scan['target'],
+                                "org_ref_id": settings.ORG_ID,
+                                "scan_type": "network_scan",
+                                "postman_file": scan['file_path'],
+                                "scan_input_meta": scan['scan_input_meta']
+                            }
+                        if agent_type == "ssllabs":
+                            payload = {
+                                "target": scan['target'],
+                                "org_ref_id": settings.ORG_ID,
+                                "scan_type": "network_scan"
+                            }
+                        if agent_type == "dsscan":
+                            parsed_url = urlparse(scan['target'])
+                            if parsed_url.netloc == '':
+                                main_domain = parsed_url.path.split(".")[-2] + "." + parsed_url.path.split(".")[-1]
+                            else:
+                                main_domain = parsed_url.netloc.split(".")[-2] + "." + parsed_url.netloc.split(".")[-1]
+                            payload = {
+                                "domain": main_domain,
+                                "org_ref_id": settings.ORG_ID,
+                                "scan_type": "network_scan"
+                            }
+                        if agent_type == "ipreputation":
+                            pass
+                        if agent_type == "wpscan":
+                            payload = {
+                                "target": scan['target'],
+                                "org_ref_id": settings.ORG_ID,
+                                "scan_type": "network_scan"
+                            }
+                        if agent_type == "masscan":
+                            if scan['schedule'] != None and scan['schedule']['scan_input_meta'] is not None:
+                                agent_meta = json.loads(scan['schedule']['scan_input_meta'])
+                            else:
+                                if scan['scan_input_meta'] is not None:
+                                    agent_meta = json.loads(scan['scan_input_meta'])
+                                else:
+                                    agent_meta = json.loads(scan['agent_id']['agent_meta'])
+                            payload = {
+                                "ip_string": scan['target'],
+                                "ports_string": agent_meta['ports_string'],
+                                "scan_scope": scan['scan_scope'],
+                                "org_ref_id": settings.ORG_ID,
+                                "scan_type": "network_scan"
+                            }
+                        if agent_type == "attack_surface":
+                            if scan['schedule'] != None and scan['schedule']['scan_input_meta'] is not None:
+                                agent_meta = json.loads(scan['schedule']['scan_input_meta'])
+                            else:
+                                if scan['scan_input_meta'] is not None:
+                                    agent_meta = json.loads(scan['scan_input_meta'])
+                                else:
+                                    agent_meta = json.loads(scan['agent_id']['agent_meta'])
+                            payload = {
+                                "ip_string": scan['target'],
+                                "ports_string": agent_meta['ports_string'],
+                                "scan_scope": scan['scan_scope'],
+                                "org_ref_id": settings.ORG_ID,
+                                "scan_type": "network_scan"
+                            }
+                            
                         try:
                             result = requests.post(scanner_endpoint, json=payload, timeout=15)
                             if result is not None:
