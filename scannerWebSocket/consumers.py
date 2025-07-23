@@ -62,7 +62,7 @@ class DataConsumer(AsyncWebsocketConsumer):
 
                     scanner_response_data = {}
                     scanner_response_data['scan_id'] = scan['scan_id']
-                    scanner_response_data['scan_type'] = scan['scan_type']
+                    scanner_response_data['scan_type'] = 'network_scan'
                     scanner_response_data['action'] = scan_action
 
                     if scan_action == 'start':
